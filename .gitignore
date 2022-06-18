@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Space\ Racer/Library
+/Space\ Racer/Logs
+/Space\ Racer/obj
+/Space\ Racer/Temp
