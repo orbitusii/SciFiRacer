@@ -10,23 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a4dbfabc7d43cd4cb637ed539994e4f, type: 3}
-  m_Name: GTD
+  m_Name: _Globals
   m_EditorClassIdentifier: 
   MinSpeed: 35
   SpeedRange:
     Min: 150
     Max: 200
+    Scale: 10
   AccelRange:
     Min: 75
     Max: 125
+    Scale: 10
   BoostRange:
     Min: 50
     Max: 75
+    Scale: 10
   TurnRange:
     Min: 5
-    Max: 8
-  RollCorrection: -3
+    Max: 9
+    Scale: 10
+  RollCorrection: -6
+  IgnoreRollAngle: 30
   DriftRange:
     Min: 2
     Max: 0.75
+    Scale: 10
   InputCacheSize: 16

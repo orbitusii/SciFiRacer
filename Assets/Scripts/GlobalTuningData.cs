@@ -24,6 +24,7 @@ public class MinMax
 {
     public float Min;
     public float Max;
+    public float Scale = 10;
 
     public MinMax (float min, float max)
     {
@@ -31,9 +32,16 @@ public class MinMax
         this.Max = max;
     }
 
+    public MinMax(float min, float max, float scale)
+    {
+        this.Min = min;
+        this.Max = max;
+        this.Scale = scale;
+    }
+
     public float Eval (float value)
     {
-        float lerpval = value / 10;
+        float lerpval = value / Scale;
 
         return Mathf.Lerp(Min, Max, lerpval);
     }
