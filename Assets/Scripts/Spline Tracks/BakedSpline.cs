@@ -8,6 +8,8 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class BakedSpline: ScriptableObject
 {
+    public SplineBakeArguments Args = new SplineBakeArguments(1, 16, true, true);
+
     public Spline[] Originals;
 
     [SerializeField, HideInInspector]
@@ -18,7 +20,6 @@ public class BakedSpline: ScriptableObject
     [ContextMenu("Bake!")]
     public void Bake ()
     {
-        var args = new SplineBakeArguments(1, 16, true);
-        Meshes = SplineBaker.BakeSplines(Originals, args);
+        Meshes = SplineBaker.BakeSplines(Originals, Args);
     }
 }

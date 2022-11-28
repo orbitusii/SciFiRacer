@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public static class SplineBaker
 {
@@ -23,11 +24,11 @@ public static class SplineBaker
             }
 
             Vector3[] points = s.AllSurfacePoints(s.PointCount, args.WidthSteps, true);
-            Debug.Log($"{points.Length}");
+            //Debug.Log($"{points.Length}");
 
             newMesh.SetVertices(points);
 
-            newMesh.SetTriangles(ComputeTris(s.PointCount, args.WidthSteps), 0);
+            newMesh.SetTriangles(ComputeTris(s.PointCount + 1, args.WidthSteps + 1), 0);
 
             newMesh.RecalculateNormals(UnityEngine.Rendering.MeshUpdateFlags.Default);
 
@@ -36,31 +37,48 @@ public static class SplineBaker
             meshes.Add(newMesh);
         }
 
+        if(args.CombineMeshes)
+        {
+            Matrix4x4 mat = Matrix4x4.identity;
+            Mesh combined = new Mesh();
+            CombineInstance[] CIs = meshes.Select(x => new CombineInstance() { mesh = x, subMeshIndex = 0, transform = mat }).ToArray();
+
+            combined.CombineMeshes(CIs, true);
+
+            combined.Optimize();
+            combined.RecalculateNormals();
+            combined.UploadMeshData(false);
+
+            meshes.Insert(0, combined);
+        }
+
         return meshes.ToArray();
     }
 
     private static int[] ComputeTris (int rows, int columns)
     {
         int[] triArray = new int[rows * columns * 6];
-        Debug.Log(rows * columns);
+        //Debug.Log(rows * columns * 6);
         int index = 0;
 
-        for(int i = 0; i < rows-1; i++)
+        for(int i = 0; i < rows - 1; i++)
         {
-            for(int j = 0; j < columns-1; j++)
+            for(int j = 0; j < columns - 1; j++)
             {
+                int BL = i * columns + j;
+                int BR = BL + 1;
+                int UL = (i + 1) * columns + j;
+                int UR = UL + 1;
 
                 // First tri for this quad
-                triArray[index+0] = index;
-                triArray[index+1] = index + columns + 1;
-                triArray[index+2] = index + 1;
+                triArray[index++] = BL;
+                triArray[index++] = UL;
+                triArray[index++] = BR;
 
                 // Second tri for this quad
-                triArray[index+3] = index + columns + 2;
-                triArray[index+4] = index + 1;
-                triArray[index+5] = index + columns + 1;
-
-                index += 6;
+                triArray[index++] = UL;
+                triArray[index++] = UR;
+                triArray[index++] = BR;
             }
         }
 
@@ -68,16 +86,20 @@ public static class SplineBaker
     }
 }
 
+[System.Serializable]
 public struct SplineBakeArguments
 {
     public float PointMultiplier;
     public int WidthSteps;
     public bool UniformSteps;
+    public bool CombineMeshes;
 
-    public SplineBakeArguments (float pointMult = 1, int wSteps = 16, bool uniform = true)
+    public SplineBakeArguments (float pointMult = 1, int wSteps = 16, bool uniform = true, bool combine = false)
     {
         PointMultiplier = pointMult;
         WidthSteps = wSteps;
         UniformSteps = uniform;
+
+        CombineMeshes = combine;
     }
 }
