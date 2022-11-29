@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e0cb1e11871bf141928d304932e351c, type: 3}
   m_Name: BakedSplines
   m_EditorClassIdentifier: 
+  Args:
+    PointMultiplier: 1
+    WidthSteps: 16
+    UniformSteps: 1
+    CombineMeshes: 1
+    ClampUVs: 0
   Originals:
   - Start:
       Point: {x: 21.57708, y: 0, z: 28.166985}
@@ -3878,6 +3884,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   Meshes:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

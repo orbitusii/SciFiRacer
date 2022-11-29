@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{E63EFAAD-52ED-15CE-6397-ABC947E0362B}</ProjectGuid>
+    <ProjectGuid>{1E4F5572-71CA-82E0-0E40-320FA85317A4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -72,6 +72,7 @@
     <Compile Include="Assets\Scripts\Spline Tracks\SplineBaker.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\enums.cs" />
     <Compile Include="Assets\Input\MainControls.cs" />
+    <Compile Include="Assets\Scripts\Spline Tracks\SurfaceFollower.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

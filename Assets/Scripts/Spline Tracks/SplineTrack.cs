@@ -73,6 +73,14 @@ public class SplineTrack : MonoBehaviour
             Gizmos.DrawRay(s.Evaluate(0.5f), tanAt050);
             Gizmos.DrawRay(s.Evaluate(0.75f), tanAt075);
 
+            Gizmos.color = Color.gray;
+            Vector3[] allPoints = s.AllSurfacePoints(s.PointCount, WidthSteps, true);
+
+            foreach (Vector3 pt in allPoints)
+            {
+                Gizmos.DrawSphere(pt, 0.1f);
+            }
+
         }
     }
 

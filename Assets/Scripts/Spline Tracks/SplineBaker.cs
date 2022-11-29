@@ -23,11 +23,11 @@ public static class SplineBaker
                 s.PointCount = Mathf.RoundToInt(Mathf.Pow(2, 16) / (args.WidthSteps +1)) -1;
             }
 
-            Vector3[] points = s.AllSurfacePoints(s.PointCount, args.WidthSteps, true);
+            Vector3[] points = s.AllSurfacePoints(s.PointCount, args.WidthSteps, args.UniformSteps);
             //Debug.Log($"{points.Length}");
 
             newMesh.SetVertices(points);
-
+            newMesh.SetUVs(0, ComputeUVs(vertices, args.WidthSteps + 1, args.ClampUVs));
             newMesh.SetTriangles(ComputeTris(s.PointCount + 1, args.WidthSteps + 1), 0);
 
             newMesh.RecalculateNormals(UnityEngine.Rendering.MeshUpdateFlags.Default);
@@ -53,6 +53,31 @@ public static class SplineBaker
         }
 
         return meshes.ToArray();
+    }
+
+    private static Vector2[] ComputeUVs (int points, int columns, bool clampUVs)
+    {
+        Vector2[] uvArray = new Vector2[points];
+        int index = 0;
+
+        int rows = points / columns;
+
+        float UMult = clampUVs ? 1 : (columns - 1);
+        float VMult = clampUVs ? 1 : (rows - 1);
+
+        for (int i = 0; i < rows; i++)
+        {
+            float rowPerc = (float)i / (rows - 1);
+
+            for (int j = 0; j < columns; j++)
+            {
+                float columnPerc = (float)j / (columns - 1);
+
+                uvArray[index++] = new Vector2(UMult * columnPerc, VMult * rowPerc);
+            }
+        }
+
+        return uvArray;
     }
 
     private static int[] ComputeTris (int rows, int columns)
@@ -93,6 +118,7 @@ public struct SplineBakeArguments
     public int WidthSteps;
     public bool UniformSteps;
     public bool CombineMeshes;
+    public bool ClampUVs;
 
     public SplineBakeArguments (float pointMult = 1, int wSteps = 16, bool uniform = true, bool combine = false)
     {
@@ -101,5 +127,7 @@ public struct SplineBakeArguments
         UniformSteps = uniform;
 
         CombineMeshes = combine;
+
+        ClampUVs = false;
     }
 }
