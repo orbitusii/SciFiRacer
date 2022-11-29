@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class SplineMeshPuller : MonoBehaviour
 {
-    public BakedSpline BakedSource;
+    public SplineBakeArguments BakeArgs = new SplineBakeArguments(1, 16, true, true);
+    public SplineTrack SourceSplines;
+    private Mesh[] bakedMeshes;
     public bool ForceBakeOnStart = true;
     public int MeshIndex = 0;
 
@@ -13,9 +15,11 @@ public class SplineMeshPuller : MonoBehaviour
 
     void Start()
     {
-        if (ForceBakeOnStart) BakedSource?.Bake();
+        if (SourceSplines is null) return;
 
-        (GetComponent(typeof(MeshFilter)) as MeshFilter).mesh = BakedSource?.Meshes[MeshIndex];
+        bakedMeshes = SplineBaker.BakeSplines(SourceSplines.Splines, BakeArgs);
+
+        (GetComponent(typeof(MeshFilter)) as MeshFilter).mesh = bakedMeshes[MeshIndex];
 
         if(GenerateColliders)
         {
@@ -23,7 +27,7 @@ public class SplineMeshPuller : MonoBehaviour
 
             foreach(int i in ColliderIndices)
             {
-                Mesh m = BakedSource.Meshes[i];
+                Mesh m = bakedMeshes[i];
                 GameObject newCol = new GameObject($"Collider {i}");
                 newCol.transform.parent = parent;
 
@@ -33,9 +37,5 @@ public class SplineMeshPuller : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
