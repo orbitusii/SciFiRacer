@@ -187,6 +187,8 @@ public class SplineTrackEditor : Editor
 
     private void OnSceneGUI()
     {
+        Quaternion rotation = Camera.current.transform.rotation;
+
         foreach(Node n in _target.Nodes)
         {
             Color lastColor = Handles.color;
@@ -207,8 +209,8 @@ public class SplineTrackEditor : Editor
             }
             else
             {
-                float hSize = HandleUtility.GetHandleSize(n.Point) * 0.25f;
-                bool buttonPressed = Handles.Button(n.Point, Handles.matrix.rotation, hSize, hSize * 2, Handles.RectangleHandleCap);
+                float hSize = HandleUtility.GetHandleSize(n.Point) * 0.15f;
+                bool buttonPressed = Handles.Button(n.Point, rotation, hSize, hSize * 2, Handles.RectangleHandleCap);
 
                 if (buttonPressed) selectedNode = n;
             }
