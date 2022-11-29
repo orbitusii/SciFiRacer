@@ -28,6 +28,10 @@ public static class SplineBaker
 
             newMesh.SetVertices(points);
             newMesh.SetUVs(0, ComputeUVs(vertices, args.WidthSteps + 1, args.ClampUVs));
+
+            //Debug.Log($"Start Curve: {s.Start?.Curvature} End Curve: {s.End?.Curvature}");
+
+            newMesh.SetColors(ComputeColorValues(vertices, args.WidthSteps + 1, s.Start.Curvature, s.End.Curvature));
             newMesh.SetTriangles(ComputeTris(s.PointCount + 1, args.WidthSteps + 1), 0);
 
             newMesh.RecalculateNormals(UnityEngine.Rendering.MeshUpdateFlags.Default);
@@ -80,6 +84,29 @@ public static class SplineBaker
         return uvArray;
     }
 
+    private static Color[] ComputeColorValues (int points, int columns, float curv0, float curv1)
+    {
+        Color[] colorArray = new Color[points];
+        int index = 0;
+
+        int rows = points / columns;
+
+        for (int i = 0; i < rows; i++)
+        {
+            float rowPerc = (float)i / (rows - 1);
+            float curvature = Mathf.Lerp(curv0, curv1, rowPerc) / (2 * Mathf.PI) + 0.5f;
+
+            for (int j = 0; j < columns; j++)
+            {
+                float columnPerc = (float)j / (columns - 1);
+
+                colorArray[index++] = new Color(rowPerc, columnPerc, curvature);
+            }
+        }
+
+        return colorArray;
+    }
+
     private static int[] ComputeTris (int rows, int columns)
     {
         int[] triArray = new int[rows * columns * 6];
@@ -101,9 +128,9 @@ public static class SplineBaker
                 triArray[index++] = BR;
 
                 // Second tri for this quad
-                triArray[index++] = UL;
                 triArray[index++] = UR;
                 triArray[index++] = BR;
+                triArray[index++] = UL;
             }
         }
 
