@@ -728,6 +728,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    NormalTest: {x: 0.5, y: 0}
   - Start:
       Point: {x: -11.587629, y: 6.891065, z: 29.24}
       _fwd: {x: -24.172915, y: 4.0057874, z: -8.47777}
@@ -1352,6 +1353,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    NormalTest: {x: 0, y: 0}
   - Start:
       Point: {x: -26.926966, y: 7.426628, z: -2.4877014}
       _fwd: {x: -6.482239, y: 5.1226454, z: -12.099124}
@@ -2121,6 +2123,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    NormalTest: {x: 0.45, y: -0.95}
   - Start:
       Point: {x: -17.096523, y: -1.1046867, z: -51.111572}
       _fwd: {x: 21.911793, y: -7.0587254, z: -0.6565094}
@@ -3148,6 +3151,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    NormalTest: {x: 0.18, y: 0}
   - Start:
       Point: {x: 10.431484, y: 18.915476, z: -22.294632}
       _fwd: {x: -24.331097, y: -10.450825, z: 11.885451}
@@ -4057,6 +4061,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    NormalTest: {x: 0, y: 0}
   Target: {fileID: 11400000, guid: ab1ae4b5c55c7fb40bb397590e39692d, type: 2}
 --- !u!4 &728437677
 Transform:
@@ -4294,6 +4299,7 @@ GameObject:
   - component: {fileID: 1476256128}
   - component: {fileID: 1476256127}
   - component: {fileID: 1476256130}
+  - component: {fileID: 1476256131}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4399,6 +4405,26 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &1476256131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1476256126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcef5fb745395ae44a11dae7423e63d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TopSpeed: 3
+  Accel: 3
+  <CurrentSpeed>k__BackingField: 0
+  TurnSpeed: 1
+  <CurrentAngle>k__BackingField: 0
+  HoverDist: 0.25
+  scanArea: {x: 1, y: 1, z: 1}
+  ScanRadius: 0
 --- !u!1 &1680653500
 GameObject:
   m_ObjectHideFlags: 0

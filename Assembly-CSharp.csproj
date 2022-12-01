@@ -65,15 +65,15 @@
     <Compile Include="Assets\Scripts\Spacecraft.cs" />
     <Compile Include="Assets\Scripts\RaceManager.cs" />
     <Compile Include="Assets\Scripts\SpacecraftData.cs" />
+    <Compile Include="Assets\Scripts\Spline Tracks\SurfaceFollower.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\Node.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\GlobalTuningData.cs" />
+    <Compile Include="Assets\Scripts\Spline Tracks\SplineColliderData.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\BakedSpline.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\SplineBaker.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\enums.cs" />
     <Compile Include="Assets\Input\MainControls.cs" />
-    <Compile Include="Assets\Scripts\Spline Tracks\SurfaceFollower.cs" />
-    <Compile Include="Assets\Scripts\Spline Tracks\SplineCollider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
