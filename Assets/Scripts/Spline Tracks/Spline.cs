@@ -20,6 +20,8 @@ public class Spline
     /// </summary>
     public AnimationCurve TimeLUT = new AnimationCurve();
 
+    public Vector2 NormalTest = Vector2.one / 2f;
+
     public Spline(Node s, Node e, float pointCountMultiplier = 1)
     {
         Start = s;
@@ -48,7 +50,7 @@ public class Spline
         {
             float t = (float)i / increments;
 
-            Vector3 nextPoint = Evaluate(t);
+            Vector3 nextPoint = Point(t);
 
             _length += Vector3.Distance(lastPoint, nextPoint);
 
@@ -68,13 +70,13 @@ public class Spline
         {
             float t = (float)i / PointCount;
 
-            _points[i] = Evaluate(t);
+            _points[i] = Point(t);
         }
 
         return _points;
     }
 
-    public Vector3 Evaluate (float time)
+    public Vector3 Point (float time)
     {
         return EvaluateNodes(Start, End, time);
     }
@@ -84,9 +86,14 @@ public class Spline
         return EvaluateDeriv(Start, End, time);
     }
 
+    public float Width (float time)
+    {
+        return Mathf.Lerp(Start.Width, End.Width, time);
+    }
+
     public Vector3 Normal (float time)
     {
-        Vector3 pos = Evaluate(time);
+        Vector3 pos = Point(time);
         Vector3 deriv = Derivative(time);
         Matrix4x4 mat = Matrix4x4.TRS(pos, Quaternion.LookRotation(deriv), Vector3.one);
 
@@ -103,30 +110,44 @@ public class Spline
         return Vector3.Cross(Normal(time), Derivative(time).normalized);
     }
 
-    public Vector3 SurfacePoint (float time, float width)
+    public Vector3 SurfacePoint (float time, float wTime)
     {
-        float lerpedWidth = Mathf.Lerp(Start.Width, End.Width, time);
-        float clampedWidth = Mathf.Clamp(width, -lerpedWidth, lerpedWidth);
-
-        float lerpedCurvature = Mathf.Lerp(Start.Curvature, End.Curvature, time);
-        Vector3 point = Evaluate(time);
+        Vector3 point = Point(time);
         Vector3 norm = Normal(time);
         Vector3 tang = Tangent(time);
 
-        Vector3 onNorm = Vector3.zero;
-        Vector3 onTang = clampedWidth * tang;
+        float lerpedWidth = Mathf.Lerp(Start.Width, End.Width, time);
+        float lerpedCurvature = Mathf.Lerp(Start.Curvature, End.Curvature, time) / lerpedWidth;
 
-        if (lerpedCurvature != 0)
-        {
-            float radius = 1 / lerpedCurvature;
+        bool flat = lerpedCurvature == 0;
+        float radius = flat ? 0 : 1 / lerpedCurvature;
+        float radiusOffset = lerpedCurvature * lerpedWidth / Mathf.PI;
 
-            float arcAngle = clampedWidth / radius;
+        float widthPos = wTime * lerpedWidth;
+        float arcAngle = wTime / radius;
 
-            onNorm += (1 - radius * Mathf.Cos(arcAngle)) * norm;
-            onTang *= radius * Mathf.Sin(arcAngle);
-        }
+        Vector3 onNorm = flat ? Vector3.zero : (radius * (Mathf.Cos(arcAngle) - 1) + radiusOffset) * norm;
+        Vector3 onTang = (flat ? widthPos : radius * Mathf.Sin(arcAngle)) * tang;
 
         return point + onNorm + onTang;
+    }
+
+    public Vector3 SurfaceNormal (float time, float wTime)
+    {
+        Vector3 norm = Normal(time);
+        Vector3 tang = Tangent(time);
+
+        float lerpedWidth = Mathf.Lerp(Start.Width, End.Width, time);
+        float lerpedCurvature = Mathf.Lerp(Start.Curvature, End.Curvature, time) / lerpedWidth;
+
+        bool flat = lerpedCurvature == 0;
+        float radius = flat ? 0 : 1 / lerpedCurvature;
+
+        float arcAngle = wTime / radius;
+
+        Vector3 trueNorm = flat ? norm : (radius * Mathf.Cos(arcAngle) * norm + radius * Mathf.Sin(arcAngle) * tang).normalized * Mathf.Sign(lerpedCurvature);
+
+        return trueNorm;
     }
 
     public Vector3[] AllSurfacePoints (int timeSteps, int widthSteps, bool useUniformDistance = false)
@@ -140,16 +161,16 @@ public class Spline
             // in order to get the time values for specific increments of distance
             float time = useUniformDistance ? TimeLUT.Evaluate((float)i / timeSteps * Length) : (float)i / timeSteps;
 
-            float lerpedWidth = Mathf.Lerp(Start.Width, End.Width, time);
-
-            float lerpedCurvature = Mathf.Lerp(Start.Curvature, End.Curvature, time) / lerpedWidth;
-            float radiusOffset = lerpedCurvature * lerpedWidth / Mathf.PI;
-            Vector3 point = Evaluate(time);
+            Vector3 point = Point(time);
             Vector3 norm = Normal(time);
             Vector3 tang = Tangent(time);
 
+            float lerpedWidth = Mathf.Lerp(Start.Width, End.Width, time);
+            float lerpedCurvature = Mathf.Lerp(Start.Curvature, End.Curvature, time) / lerpedWidth;
+
             bool flat = lerpedCurvature == 0;
             float radius = flat ? 0 : 1 / lerpedCurvature;
+            float radiusOffset = lerpedCurvature * lerpedWidth / Mathf.PI;
 
             for (int j = 0; j <= widthSteps; j++)
             {
@@ -158,9 +179,9 @@ public class Spline
                 float arcAngle = widthPos / radius;
 
                 Vector3 onNorm = flat ? Vector3.zero : (radius * (Mathf.Cos(arcAngle) - 1) + radiusOffset) * norm;
-                Vector3 onTan = (flat ? widthPos : radius * Mathf.Sin(arcAngle)) * tang;
+                Vector3 onTang = (flat ? widthPos : radius * Mathf.Sin(arcAngle)) * tang;
 
-                allPoints[index] = point + onNorm + onTan;
+                allPoints[index] = point + onNorm + onTang;
                 
                 index++;
             }
