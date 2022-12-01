@@ -33,6 +33,10 @@ public class SplineMeshPuller : MonoBehaviour
 
                 var meshCol = (MeshCollider)newCol.AddComponent(typeof(MeshCollider));
                 meshCol.sharedMesh = m;
+
+                var splineCol = (SplineColliderData)newCol.AddComponent(typeof(SplineColliderData));
+                splineCol.Parent = this;
+                splineCol.Spline = SourceSplines.Splines[i-1];
             }
         }
     }

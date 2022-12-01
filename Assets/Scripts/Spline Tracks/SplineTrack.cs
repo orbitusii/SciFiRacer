@@ -64,14 +64,19 @@ public class SplineTrack : MonoBehaviour
             Vector3 tanAt075 = s.Tangent(0.75f);
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawRay(s.Evaluate(0.25f), normAt025);
-            Gizmos.DrawRay(s.Evaluate(0.5f), normAt050);
-            Gizmos.DrawRay(s.Evaluate(0.75f), normAt075);
+            Gizmos.DrawRay(s.Point(0.25f), normAt025);
+            Gizmos.DrawRay(s.Point(0.5f), normAt050);
+            Gizmos.DrawRay(s.Point(0.75f), normAt075);
 
             Gizmos.color = Color.white;
-            Gizmos.DrawRay(s.Evaluate(0.25f), tanAt025);
-            Gizmos.DrawRay(s.Evaluate(0.5f), tanAt050);
-            Gizmos.DrawRay(s.Evaluate(0.75f), tanAt075);
+            Gizmos.DrawRay(s.Point(0.25f), tanAt025);
+            Gizmos.DrawRay(s.Point(0.5f), tanAt050);
+            Gizmos.DrawRay(s.Point(0.75f), tanAt075);
+
+            Gizmos.color = Color.cyan;
+            float time = s.NormalTest.x;
+            float width = s.NormalTest.y * s.Width(time);
+            Gizmos.DrawRay(s.SurfacePoint(time, width), s.SurfaceNormal(time, width));
 
             Gizmos.color = Color.gray;
             Vector3[] allPoints = s.AllSurfacePoints(s.PointCount, WidthSteps, true);
