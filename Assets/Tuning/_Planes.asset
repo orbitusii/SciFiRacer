@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4dbfabc7d43cd4cb637ed539994e4f, type: 3}
   m_Name: _Planes
   m_EditorClassIdentifier: 
-  MinSpeed: 150
+  MinSpeed: 60
   SpeedRange:
-    Min: 400
-    Max: 600
+    Min: 120
+    Max: 180
     Scale: 10
   AccelRange:
     Min: 75
@@ -26,14 +26,14 @@ MonoBehaviour:
     Max: 75
     Scale: 10
   TurnRange:
-    Min: 1.5
-    Max: 3.5
+    Min: 0.62831855
+    Max: 1.0471976
     Scale: 10
   RollRate:
-    Min: 1.5707964
+    Min: 3.1415927
     Max: 6.2831855
     Scale: 10
-  RollCorrection: 12.566372
+  RollCorrection: 18.849556
   IgnoreRollAngle: 30
   DriftRange:
     Min: 0.75

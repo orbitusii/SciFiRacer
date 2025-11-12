@@ -30,6 +30,7 @@ public class CoupledPlaneFM : MonoBehaviour, IInputSink
     private List<InputSnapshot> inputCache = new List<InputSnapshot>();
     private int cacheSize;
 
+    public float TargetPitchRate = 0;
     public float TargetRoll = 0;
 
     void Start()
@@ -90,12 +91,19 @@ public class CoupledPlaneFM : MonoBehaviour, IInputSink
 
             float rollError = (TargetRoll - currentRoll) * Mathf.Deg2Rad;
 
-            float rr = Mathf.Min(Mathf.Abs(rollError)*10, Roll) * Mathf.Sign(rollError);
-
-            Rigidbody.AddRelativeTorque(Vector3.forward * 6*(rr - currentAngVel.z), ForceMode.Acceleration);
+            float rr = Mathf.Min(Mathf.Abs(rollError) * 10, Roll) * Mathf.Sign(rollError);
 
             // Pitch
-            float pitch = Mathf.Min(Mathf.Abs(Turn * snap.Pitch), Turn) * Mathf.Sign(snap.Pitch);
+            TargetPitchRate = Mathf.Clamp(TargetPitchRate + snap.Pitch * dt / 2, -Turn, Turn);
+
+            float pitchError = TargetPitchRate - currentAngVel.x;
+
+            float pr = Mathf.Min(Mathf.Abs(pitchError) * 10, Turn) * Mathf.Sign(pitchError);
+
+            //Rigidbody.AddRelativeTorque(new Vector3(pitch, 0, rr - currentAngVel.z) * 6, ForceMode.Acceleration);
+            Rigidbody.MoveRotation(transform.rotation * Quaternion.Euler(pitchError * dt * Mathf.Rad2Deg, -currentRoll / 120 * Drift, rr * dt * Mathf.Rad2Deg));
+
+            Rigidbody.AddForce(transform.forward * MinSpeed - Rigidbody.velocity + transform.right * -currentRoll / 30 * Drift, ForceMode.VelocityChange);
         }
     }
 }
