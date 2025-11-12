@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Spacecraft : MonoBehaviour
+public class Spacecraft : MonoBehaviour, IInputSink
 {
     public SpacecraftData Data;
-    public int player;
+    public int player { get; set; }
 
     public float MinSpeed;
     public float TopSpeed;
@@ -19,6 +19,7 @@ public class Spacecraft : MonoBehaviour
 
     public float Drift;
 
+    // Overwriting default Rigidbody field because it no longer works. Thanks Unity.
 #pragma warning disable CS0108
     public Rigidbody Rigidbody { get; private set; }
 #pragma warning restore CS0108

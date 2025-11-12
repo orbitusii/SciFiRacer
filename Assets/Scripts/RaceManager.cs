@@ -48,6 +48,15 @@ public class RaceManager : MonoBehaviour
         Debug.Log("Registered racer", sc);
     }
 
+    public static void RegisterRacer (IInputSink pfm)
+    {
+        RaceUser newUser = new RaceUser(pfm);
+        newUser.lapCount = singleton.PracticeLap ? -1 : 0;
+        singleton.racers.Add(newUser);
+
+        Debug.Log("Registered racer");
+    }
+
     public static bool PassWaypoint (Spacecraft sc, Waypoint wp)
     {
         RaceUser user = singleton.racers.Find(x => x.Equals(sc));
@@ -73,6 +82,32 @@ public class RaceManager : MonoBehaviour
 
         return false;
     }
+
+    public static bool PassWaypoint(IInputSink pfm, Waypoint wp)
+    {
+        RaceUser user = singleton.racers.Find(x => x.Equals(pfm));
+
+        if (user.waypoint == wp.Index - 1)
+        {
+            Debug.Log($"Racer passed waypoint {wp.name}");
+            user.waypoint++;
+        }
+        else if (user.waypoint == singleton.lapLength - 1 && wp.isStartFinish)
+        {
+            user.waypoint = 0;
+            user.lapCount++;
+            Debug.Log($"Racer passed the start and is now on lap {user.lapCount + 1}/{singleton.Laps}");
+
+            if (user.lapCount == singleton.Laps)
+            {
+                Debug.Log("Racer completed the race!");
+                Time.timeScale = 0;
+            }
+        }
+
+        return false;
+    }
+
     public static GlobalTuningData GetTuningData()
     {
         return singleton.Tuning;
@@ -137,7 +172,7 @@ public class RaceManager : MonoBehaviour
 [System.Serializable]
 public class RaceUser
 {
-    public Spacecraft spacecraft;
+    public IInputSink spacecraft;
 
     public int lapCount = 0;
     public int waypoint = 0;
@@ -149,9 +184,26 @@ public class RaceUser
         waypoint = 0;
     }
 
+    public RaceUser (IInputSink pfm)
+    {
+        spacecraft = pfm;
+        lapCount = 0;
+        waypoint = 0;
+    }
+
     public bool Equals (Spacecraft other)
     {
-        return spacecraft == other;
+        return spacecraft.Equals(other);
+    }
+
+    public override bool Equals (object other)
+    {
+        if (other is IInputSink iis)
+        {
+            return Equals(iis.player);
+        }
+       
+        return false;
     }
 
     public bool Equals (int player)
