@@ -15,6 +15,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Slew",
+                    "type": "Value",
+                    "id": "959b3ad8-e6a3-435d-b66c-0ef64644197f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Boost",
                     "type": "Button",
                     "id": "465b0485-ed4b-417e-b8f3-5c17da8aec67",
@@ -172,6 +181,39 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Throttle",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Keyboard",
+                    "id": "65d329bf-d277-4dcd-9fe3-8db727b006a7",
+                    "path": "1DAxis(whichSideWins=2)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slew",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "50615cec-1006-4e90-ad30-874ccd069515",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Slew",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "163bc5cb-b25d-4f64-bf26-ed4994e4126e",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Slew",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

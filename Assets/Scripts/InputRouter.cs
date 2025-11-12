@@ -10,7 +10,7 @@ public class InputRouter : MonoBehaviour
     private List<RaceUser> racers;
 
     public int PlayerID = 0;
-    private Spacecraft targetCraft;
+    private IInputSink InputTarget;
 
     private MainControls localControls;
     private MainControls.DefaultActions actions;
@@ -30,7 +30,7 @@ public class InputRouter : MonoBehaviour
                 return;
             }
         }
-        else if (targetCraft)
+        else if (InputTarget != null)
         {
             ProcessPlayerInput();
 
@@ -48,7 +48,7 @@ public class InputRouter : MonoBehaviour
         if(tcIndex > -1)
         {
             Debug.Log("Found player!");
-            targetCraft = racers[tcIndex].spacecraft;
+            InputTarget = racers[tcIndex].spacecraft;
 
             localControls = new MainControls();
             actions = localControls.Default;
@@ -71,7 +71,8 @@ public class InputRouter : MonoBehaviour
             Used = false
         };
 
-        targetCraft.SetFrameInput(snap);
+        if(InputTarget is IInputSink iis)
+            iis.SetFrameInput(snap);
     }
 }
 

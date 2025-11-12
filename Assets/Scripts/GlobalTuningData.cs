@@ -11,6 +11,7 @@ public class GlobalTuningData : ScriptableObject
     public MinMax BoostRange = new MinMax(50, 75);
 
     public MinMax TurnRange = new MinMax(2, 3);
+    public MinMax RollRate = new MinMax(Mathf.PI, Mathf.PI * 2);
     public float RollCorrection = 5;
     public float IgnoreRollAngle = 30;
 

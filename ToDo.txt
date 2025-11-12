@@ -1,0 +1,7 @@
+- Minimum speed
+- Max speed
+- Acceleration
+- Pitch
+- 
+
+Steal the pitch/roll control from CVW5 to make it feel really good!
