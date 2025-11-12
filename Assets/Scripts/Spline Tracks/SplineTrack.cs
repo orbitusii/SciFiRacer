@@ -7,7 +7,7 @@ public class SplineTrack : MonoBehaviour
     public bool Close = true;
     public bool UseUniformDistances = false;
 
-    [Range(0.1f, 2f)]
+    [Range(0.001f, 2f)]
     public float PointsMultiplier = 1;
     [Range(1, 16)]
     public int WidthSteps = 32;

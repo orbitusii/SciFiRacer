@@ -6,6 +6,7 @@ public class SplineColliderData : MonoBehaviour
 {
     public SplineMeshPuller Parent;
     public Spline Spline;
+    public Spline Next;
     private MeshCollider mc;
     private Mesh mesh;
     private List<Color> colors = new List<Color>();
@@ -17,22 +18,31 @@ public class SplineColliderData : MonoBehaviour
         mesh.GetColors(colors);
     }
 
+
     public Matrix4x4 GetMatrixAtPoint(int triangle, Vector3 point)
+    {
+        Vector2 surfPos = GetSurfacePosition(triangle, point);
+
+        return GetMatrixAtPoint(surfPos);
+    }
+
+    public Matrix4x4 GetMatrixAtPoint(Vector2 surfPos)
+    {
+        return Spline.GetMatrixAtPoint(surfPos);
+    }
+
+    public Vector2 GetSurfacePosition (int triangle, Vector3 point)
     {
         Color col = GetSplineValuesOnTriangle(triangle, point);
         float dist = col.r * Spline.Length;
         float t = Spline.TimeLUT.Evaluate(dist);
 
-        float wT = col.g * 2 - 1;
+        float wT = col.g;
 
-        Vector3 surfPoint = Spline.SurfacePoint(t, wT);
-        Vector3 deriv = Spline.Derivative(t);
-        Vector3 normal = Spline.SurfaceNormal(t, wT);
-
-        return Matrix4x4.TRS(surfPoint, Quaternion.LookRotation(deriv, normal), Vector3.one);
+        return new Vector2(t, wT);
     }
 
-    public Color GetSplineValuesOnTriangle (int triangle, Vector3 point)
+    private Color GetSplineValuesOnTriangle (int triangle, Vector3 point)
     {
         int index0 = mesh.triangles[triangle * 3 + 0];
         int index1 = mesh.triangles[triangle * 3 + 1];
@@ -42,15 +52,29 @@ public class SplineColliderData : MonoBehaviour
         var pt1 = GetVertexValues(index1);
         var pt2 = GetVertexValues(index2);
 
+        Debug.DrawLine(pt0.point, pt1.point);
+        Debug.DrawLine(pt1.point, pt2.point);
+        Debug.DrawLine(pt2.point, pt0.point);
+        Debug.DrawRay(pt0.point, Vector3.up);
+
         Vector3 vecDeriv = pt1.point - pt0.point;
         Vector3 vecTang = pt2.point - pt0.point;
+        Vector3 ptRelative = point - pt0.point;
 
-        float dot01 = Vector3.Dot(vecDeriv, point - pt0.point);
-        float dot02 = Vector3.Dot(vecTang, point - pt0.point);
-        float dotHypot = Mathf.Sqrt(dot01 * dot01 + dot02 * dot02);
+        float dotDeriv = Vector3.Dot(vecDeriv.normalized, ptRelative) / vecDeriv.magnitude;
+        float dotTang = Vector3.Dot(vecTang.normalized, ptRelative) / vecTang.magnitude;
 
-        Color col = Color.Lerp(pt1.color, pt2.color, dotHypot);
-        return col;
+        //Debug.DrawRay(pt0.point, vecDeriv * dotDeriv, Color.red);
+        //Debug.DrawRay(pt0.point, vecTang * dotTang, Color.green);
+
+        Debug.DrawRay(pt0.point+ vecTang * dotTang, vecDeriv * dotDeriv, Color.red);
+        Debug.DrawRay(pt0.point+ vecDeriv * dotDeriv, vecTang * dotTang, Color.green);
+
+        float r = Mathf.Lerp(pt0.color.r, pt1.color.r, dotDeriv);
+        float g = Mathf.Lerp(pt0.color.g, pt2.color.g, dotTang);
+        float b = Mathf.Lerp(pt0.color.b, pt1.color.b, dotDeriv);
+
+        return new Color(r, g, b);
     }
 
     public (Vector3 point, Color color) GetVertexValues (int vertex)
@@ -59,5 +83,26 @@ public class SplineColliderData : MonoBehaviour
         Color color = colors[vertex];
 
         return (point, color);
+    }
+
+    public void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+
+        int sPoints = Spline.Points.Length;
+
+        for (int i = 0; i < sPoints - 1; i++)
+        {
+            Gizmos.DrawLine(Spline.Points[i], Spline.Points[i + 1]);
+        }
+
+        Gizmos.color = Color.gray;
+
+        int nPoints = Next.GeneratePoints().Length;
+
+        for (int i = 0; i < nPoints - 1; i++)
+        {
+            Gizmos.DrawLine(Next.Points[i], Next.Points[i + 1]);
+        }
     }
 }

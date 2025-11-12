@@ -27,7 +27,7 @@ public class Spline
         Start = s;
         End = e;
 
-        float RPD = RawPointDistance(Start, End);
+        float RPD = Mathf.Log10(RawPointDistance(Start, End));
 
         (Length, TimeLUT) = CalculateLength(Mathf.RoundToInt(RPD));
 
@@ -227,5 +227,14 @@ public class Spline
         Vector3 P3 = to.Point;
 
         return Vector3.Distance(P0, P1) + Vector3.Distance(P1, P2) + Vector3.Distance(P2, P3);
+    }
+
+    public Matrix4x4 GetMatrixAtPoint(Vector2 surfPos)
+    {
+        Vector3 surfPoint = SurfacePoint(surfPos.x, surfPos.y);
+        Vector3 deriv = Derivative(surfPos.x);
+        Vector3 normal = SurfaceNormal(surfPos.x, surfPos.y);
+
+        return Matrix4x4.TRS(surfPoint, Quaternion.LookRotation(deriv, normal), Vector3.one);
     }
 }

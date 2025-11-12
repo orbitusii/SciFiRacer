@@ -8,7 +8,13 @@ public class SurfaceFollower : MonoBehaviour
     public float Accel = 3;
     [field: SerializeField]
     public float CurrentSpeed { get; private set; }
-    public Vector3 Velocity { get; private set; } = Vector3.zero;
+
+    [SerializeField]
+    private Vector2 SurfacePos = Vector2.zero;
+    [SerializeField]
+    private Vector2 SurfaceVel = Vector2.zero;
+
+    private SplineColliderData currentCollider;
 
     public float TurnSpeed = 1;
     [field:SerializeField]
@@ -16,10 +22,7 @@ public class SurfaceFollower : MonoBehaviour
 
     public float HoverDist = 0.25f;
 
-    public Vector3 scanArea = Vector3.one;
-    [Range(0, 0.25f)]
-    public float ScanRadius = 0;
-    float ScanLength => scanArea.y;
+    public float ScanDist = 0.2f;
 
     private MainControls.DefaultActions inputs;
 
@@ -32,72 +35,66 @@ public class SurfaceFollower : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.position += transform.forward * Time.fixedDeltaTime;
+        float slew = inputs.Slew.ReadValue<float>() * Accel;
+        float throttle = inputs.Throttle.ReadValue<float>() * Accel * Time.fixedDeltaTime;
 
-        Vector3[] scanPoints = GetScanPoints();
+        CurrentSpeed = Mathf.Clamp(CurrentSpeed + throttle, 0, TopSpeed);
 
-        Vector3 avgNormal = Vector3.zero;
-        Vector3 avgPoint = Vector3.zero;
-        bool somethingHit = false;
-        int totalHits = 0;
+        SurfaceVel = new Vector3(CurrentSpeed, slew);
 
-        foreach (Vector3 sp in scanPoints)
+        Vector3 worldVel = (transform.TransformVector(new Vector3(SurfaceVel.x, 0, SurfaceVel.y)) + (Vector3.down * 0.2f)) * Time.fixedDeltaTime;
+        Vector3 nextPos = transform.position + worldVel;
+        Quaternion nextRot = transform.rotation;
+
+        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, ScanDist))
         {
-            RaycastHit hit;
-            bool didHit;
-
-            if(ScanRadius > 0)
+            if(hit.collider.GetComponent<SplineColliderData>() is SplineColliderData scd)
             {
-                didHit = Physics.SphereCast(sp, ScanRadius, -transform.up, out hit, ScanLength);
-            }
-            else
-            {
-                didHit = Physics.Raycast(sp, -transform.up, out hit, ScanLength);
-            }
+                if (currentCollider is null)
+                {
+                    currentCollider = scd;
+                    Vector2 posNormalized = scd.GetSurfacePosition(hit.triangleIndex, hit.point);
+                    float width = scd.Spline.Width(scd.Spline.TimeLUT.Evaluate(posNormalized.x));
+                    SurfacePos = new Vector2(posNormalized.x * scd.Spline.Length, Mathf.Lerp(-width, width, posNormalized.y));
+                    Debug.Log($"{posNormalized} => {SurfacePos}");
+                }
+                else if (scd != currentCollider)
+                {
+                    SurfacePos.x -= currentCollider.Spline.Length;
+                    currentCollider = scd;
+                }
 
-            avgNormal += didHit ? hit.normal : Vector3.zero;
-            avgPoint += didHit ? hit.point : Vector3.zero;
-            totalHits += didHit ? 1 : 0;
+                SurfacePos += SurfaceVel * Time.fixedDeltaTime;
 
-            somethingHit |= didHit;
+                bool onCurrent = SurfacePos.x <= scd.Spline.Length;
+
+                Spline targetSpline = onCurrent ? scd.Spline : scd.Next;
+                float lengthCorrection = onCurrent ? 0 : scd.Spline.Length;
+
+                float tDist = (SurfacePos.x - lengthCorrection) / targetSpline.Length;
+                float tTrue = targetSpline.TimeLUT.Evaluate(SurfacePos.x - lengthCorrection);
+                float wT = SurfacePos.y / (targetSpline.Width(tTrue) / 2);
+
+                Matrix4x4 worldMat = targetSpline.GetMatrixAtPoint(new Vector2(tDist, wT));
+
+                Vector3 DebugPoint = worldMat.MultiplyPoint3x4(Vector3.zero);
+
+                Debug.DrawRay(DebugPoint, worldMat.MultiplyVector(Vector3.forward), Color.blue);
+                Debug.DrawRay(DebugPoint, worldMat.MultiplyVector(Vector3.right), Color.red);
+                Debug.DrawRay(DebugPoint, worldMat.MultiplyVector(Vector3.up), Color.green);
+
+                nextPos = worldMat.MultiplyPoint3x4(new Vector3(0, HoverDist, 0));
+                nextRot = worldMat.rotation;
+            }
         }
 
-        avgNormal = somethingHit ? avgNormal / totalHits : transform.up;
-        avgPoint = somethingHit ? 
-            (avgPoint / totalHits) + (avgNormal * HoverDist) : 
-            (transform.position + Vector3.down * Time.fixedDeltaTime);
-
-        Vector3 newVel = Velocity - Vector3.Dot(Velocity, avgNormal.normalized) * avgNormal.normalized;
-
-        float userAccel = inputs.Throttle.ReadValue<float>();
-
-        CurrentSpeed = Mathf.Clamp(CurrentSpeed + userAccel * Time.fixedDeltaTime * Accel, 0, TopSpeed);
-
-        transform.position = avgPoint;
-        transform.rotation = Quaternion.LookRotation(newVel.sqrMagnitude == 0 ? transform.forward : newVel, avgNormal);
+        transform.position = nextPos;
+        transform.rotation = nextRot;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Vector3[] scanPoints = GetScanPoints();
-
-        foreach (Vector3 sp in scanPoints)
-        {
-            Gizmos.DrawRay(sp, -transform.up * ScanLength);
-        }
-    }
-
-    private Vector3[] GetScanPoints ()
-    {
-        float x = scanArea.x / 2;
-        float y = scanArea.y / 2;
-        float z = scanArea.z / 2;
-
-        Vector3 LR = transform.TransformPoint(new Vector3(-x, y, -z));
-        Vector3 RR = transform.TransformPoint(new Vector3(x, y, -z));
-        Vector3 LF = transform.TransformPoint(new Vector3(-x, y, z));
-        Vector3 RF = transform.TransformPoint(new Vector3(x, y, z));
-
-        return new Vector3[] { LR, RR, LF, RF };
+        Gizmos.DrawWireSphere(transform.position, ScanDist);
+        currentCollider?.OnDrawGizmosSelected();
     }
 }

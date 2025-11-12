@@ -24,7 +24,6 @@ public static class SplineBaker
             }
 
             Vector3[] points = s.AllSurfacePoints(s.PointCount, args.WidthSteps, args.UniformSteps);
-            //Debug.Log($"{points.Length}");
 
             newMesh.SetVertices(points);
             newMesh.SetUVs(0, ComputeUVs(vertices, args.WidthSteps + 1, args.ClampUVs));
