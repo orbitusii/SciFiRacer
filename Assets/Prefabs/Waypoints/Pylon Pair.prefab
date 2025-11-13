@@ -143,7 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba18917685befe644a314a39e07f4749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gizmoSize: 10
+  gizmoSize: 120
   isStartFinish: 0
 --- !u!1 &7495047988562484669
 GameObject:

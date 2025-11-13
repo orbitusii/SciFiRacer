@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\Spacecraft.cs" />
     <Compile Include="Assets\Scripts\RaceManager.cs" />
     <Compile Include="Assets\Scripts\SpacecraftData.cs" />
+    <Compile Include="Assets\Scripts\PlaneFM\CoupledPlaneFM.cs" />
     <Compile Include="Assets\Scripts\OOBZone.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\SurfaceFollower.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\Node.cs" />
@@ -81,7 +82,6 @@
     <Compile Include="Assets\Scripts\PlaneFM\PlaneFM.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\enums.cs" />
     <Compile Include="Assets\Input\MainControls.cs" />
-    <Compile Include="Assets\Scripts\PlaneFM\CoupledPlaneFM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

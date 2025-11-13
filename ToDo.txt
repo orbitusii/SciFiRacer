@@ -1,7 +1,8 @@
 - Minimum speed
 - Max speed
 - Acceleration
-- Pitch
-- 
+X Pitch
+X Roll 
 
-Steal the pitch/roll control from CVW5 to make it feel really good!
+~~Steal the pitch/roll control from CVW5 to make it feel really good!~~
+Pitch/Roll control is a custom FBW solution that preserves roll angle through multiple pitching moments! It feels really nice
