@@ -46,4 +46,12 @@ public class MinMax
 
         return Mathf.Lerp(Min, Max, lerpval);
     }
+
+    public bool Contains (float value)
+    {
+        if (value < Min) return false;
+        if (value > Max) return false;
+
+        return true;
+    }
 }

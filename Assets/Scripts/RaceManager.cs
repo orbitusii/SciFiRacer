@@ -14,6 +14,7 @@ public class RaceManager : MonoBehaviour
     public List<Transform> StartPoints = new List<Transform>();
 
     public List<Waypoint> waypoints = new List<Waypoint>();
+    public List<Waypoint_Scored> scoredWPs = new List<Waypoint_Scored>();
 
     public List<RaceUser> racers = new List<RaceUser>();
 
@@ -36,6 +37,11 @@ public class RaceManager : MonoBehaviour
         foreach(Waypoint wp in waypoints)
         {
             wp.SetIndex(lapLength++);
+        }
+
+        foreach(Waypoint_Scored swp in scoredWPs)
+        {
+            swp.SetIndex(lapLength++);
         }
     }
 

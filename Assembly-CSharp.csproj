@@ -82,6 +82,8 @@
     <Compile Include="Assets\Scripts\PlaneFM\PlaneFM.cs" />
     <Compile Include="Assets\Scripts\Spline Tracks\enums.cs" />
     <Compile Include="Assets\Input\MainControls.cs" />
+    <Compile Include="Assets\Scripts\Waypoint_Scored.cs" />
+    <Compile Include="Assets\Scripts\Racer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
