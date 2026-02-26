@@ -39,17 +39,17 @@ public class Waypoint_Scored : MonoBehaviour
         {
             Debug.Log($"Racer {racer.gameObject.name} passed waypoint {Index}");
 
-            if (IsStart)
+            if (IsStart && !racer.IsScoringAllowed)
             {
                 racer.StartScoring();
             }
-            else if (IsFinish)
+            else if (IsFinish && racer.IsScoringAllowed)
             {
                 var scores = racer.FinalizeScoring();
 
                 Debug.Log($"Racer {racer.gameObject.name} completed course, scoring {scores.TotalScore} in {scores.Time.TotalSeconds} seconds");
             }
-            else
+            else if (racer.IsScoringAllowed)
             {
                 ScoreRacer(racer);
             }
